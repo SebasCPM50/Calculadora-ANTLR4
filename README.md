@@ -20,7 +20,6 @@ qué hace cada uno.
 
 Requiere tener Java (JDK) y el `.jar` de ANTLR 4.13.2 ya instalados, con el
 alias `antlr4` configurado.
-
 Ubicarse dentro de la carpeta del proyecto y ejecutar, en este orden:
 
 ```bash
@@ -49,41 +48,59 @@ java Calc
 
 ## Qué hace cada archivo
 
-**Archivos propios del proyecto**
+### Los que escribimos nosotros
 
-- `Calculadora.g4` — la gramática. Define qué es válido escribir: sumas,
-  restas, multiplicaciones, divisiones, asignación de variables (`x = 5`)
-  y el comando `clear`.
-- `Calc.java` — el programa principal. Conecta el lexer, el parser y el
-  visitor: lee la entrada, la convierte en tokens, arma el árbol y lo
-  recorre para calcular el resultado.
-- `EvalVisitor.java` — recorre el árbol generado por el parser y calcula
-  los resultados. Tiene un método por cada tipo de instrucción
-  (`visitAssign`, `visitMulDiv`, `visitAddSub`, `visitClear`, etc.).
-- `pruebas/*.txt` — casos de prueba ya armados (aritmética básica,
-  precedencia y paréntesis, variables, división entre cero, y `clear`).
+**`Calculadora.g4`**
+Es la gramática: el archivo donde se define qué se puede escribir en la
+calculadora. Ahí quedan las reglas de las sumas, restas,
+multiplicaciones, divisiones, la asignación de variables (`x = 5`) y el
+comando `clear`.
 
-**Archivos generados por `antlr4 -no-listener -visitor Calculadora.g4`**
+**`Calc.java`**
+Es el programa principal, el que se ejecuta con `java Calc`. Se encarga
+de leer la entrada y pasarla por las tres etapas en orden: primero el
+lexer, luego el parser, y al final el visitor, que es quien entrega el
+resultado.
 
-- `CalculadoraLexer.java` — parte el texto de entrada en tokens (números,
-  `+`, `-`, nombres de variables, etc.).
-- `CalculadoraParser.java` — agrupa esos tokens según las reglas del `.g4`
-  y arma el árbol sintáctico.
-- `CalculadoraVisitor.java` — interfaz con un método vacío por cada
-  etiqueta de la gramática (`#assign`, `#MulDiv`, `#printExpr`, etc.).
-- `CalculadoraBaseVisitor.java` — implementación vacía de esa interfaz;
-  es la clase que `EvalVisitor.java` extiende y sobrescribe.
-- `CalculadoraParser$AlgoContext.java` (uno por cada regla/etiqueta) —
-  clases que representan cada tipo de nodo del árbol, por ejemplo
-  `AssignContext`, `MulDivContext`, `IntContext`.
-- `Calculadora.tokens` y `Calculadora.interp` — archivos internos de
-  ANTLR con información de los tokens; no se editan.
+**`EvalVisitor.java`**
+Es el que hace los cálculos. Recorre el árbol que arma el parser y va
+resolviendo cada operación. Tiene un método distinto para cada tipo de
+instrucción: uno para asignar variables, uno para multiplicar/dividir,
+uno para sumar/restar, uno para el comando `clear`, etc.
 
-**Archivos generados por `javac *.java`**
+**`pruebas/*.txt`**
+Son los archivos de prueba, ya listos para correr: aritmética básica,
+precedencia y paréntesis, variables, división entre cero, y el comando
+`clear`.
 
-- Un `.class` por cada `.java` existente (`Calc.class`, `EvalVisitor.class`,
-  `CalculadoraLexer.class`, `CalculadoraParser.class`, etc.) — es el código
-  ya compilado y listo para ejecutar con `java Calc ...`.
+### Los que se generan solos al correr `antlr4 -no-listener -visitor Calculadora.g4`
+
+Estos archivos no se escriben a mano — ANTLR los crea automáticamente a
+partir de `Calculadora.g4` cada vez que se corre ese comando.
+
+- **`CalculadoraLexer.java`** — parte el texto de entrada en piezas
+  sueltas (tokens): números, `+`, `-`, nombres de variables, etc.
+- **`CalculadoraParser.java`** — toma esas piezas y arma con ellas un
+  árbol, siguiendo las reglas escritas en el `.g4`.
+- **`CalculadoraVisitor.java`** — una lista de métodos vacíos, uno por
+  cada tipo de instrucción de la gramática.
+- **`CalculadoraBaseVisitor.java`** — una versión de esa lista con los
+  métodos ya implementados de forma básica. `EvalVisitor.java` parte de
+  aquí y sobrescribe cada método con la lógica real.
+- **`CalculadoraParser$AlgoContext.java`** (hay varios, uno por cada
+  regla de la gramática) — representan cada tipo de nodo del árbol, por
+  ejemplo `AssignContext` para una asignación o `MulDivContext` para una
+  multiplicación/división.
+- **`Calculadora.tokens`** y **`Calculadora.interp`** — archivos internos
+  que usa ANTLR para su propio funcionamiento. No hace falta abrirlos ni
+  editarlos.
+
+### Los que se generan al correr `javac *.java`
+
+Java compila cada archivo `.java` y crea su versión ya lista para
+ejecutar, con extensión `.class` (`Calc.class`, `EvalVisitor.class`,
+`CalculadoraLexer.class`, `CalculadoraParser.class`, etc.). Estos son los
+que realmente corren cuando se escribe `java Calc ...`.
 
 ## Lexer, Parser y Visitor
 
