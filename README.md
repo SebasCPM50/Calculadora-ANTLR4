@@ -19,7 +19,7 @@ qué hace cada uno.
 ## Cómo correr el proyecto
 
 Requiere tener Java (JDK) y el `.jar` de ANTLR 4.13.2 ya instalados, con el
-alias `antlr4` configurado (ver `GUIA.md` para la instalación desde cero).
+alias `antlr4` configurado.
 
 Ubicarse dentro de la carpeta del proyecto y ejecutar, en este orden:
 
